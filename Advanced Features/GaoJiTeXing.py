@@ -6,6 +6,9 @@ Created on Thu Jul 30 18:50:51 2020
 """
 import string
 from functools import reduce
+import functools
+import time
+
 def _trim(s):
     start = 0
     end = len(s)-1
@@ -103,13 +106,48 @@ L2 = sorted(L, key=by_name)
 print(L2)
 
 
+def createCounter():
+    i = 1
+    def f(i):
+        def g():
+            i = i + 1
+            return i
+        return g
+    def counter():
+        return f(i)
+    return counter
+
+def is_odd(n):
+    return lambda : n%2==1
+
+L = list(filter(lambda n : n%2==1, range(1, 20)))
+
+def metric(fn):
+    @functools.wraps(fn)
+    def wrapper(*args,**kw):
+        e = time.time()
+        s = time.time()
+        print('%s executed in %s ms' % (fn.__name__, e-s))
+        return fn(*args,**kw)
+    return wrapper
 
 
+@metric
+def fast(x, y):
+    time.sleep(0.0012)
+    return x + y;
 
+def log(fn):
+    @functools.wraps(fn)
+    def wrapper(*args,**kw):
+        print('begin call')
+        fn(*args,**kw)
+        print('end call')
+    return wrapper
 
-
-
-
+@log 
+def show(x):
+    print('I LOVE YOU')
 
 
 
